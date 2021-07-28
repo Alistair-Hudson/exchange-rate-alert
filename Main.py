@@ -4,7 +4,6 @@ import time
 import DataProcessor
 
 # def ProcessCurrencies():
-
 #     while True:
 #         time.sleep(1)
 #         currencies = ["AUD", "GBP", "USD", "NZD", "ILS", "EUR"]
