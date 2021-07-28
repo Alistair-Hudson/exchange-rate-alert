@@ -35,4 +35,8 @@ def CheckAndRemoveOutofDateData(db):
         count += 1
     if 5 < count:
         db.currency.delete_one({})
-    
+
+def ClearData():
+    connection =  Connect.GetConnection()
+    db = connection.test
+    db.currency.delete_many({})

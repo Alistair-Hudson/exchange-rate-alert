@@ -7,13 +7,17 @@ def RetrieveData():
     return rates
 
 def ExtractData(rates):
-    previousRates = rates[0]
-    currentRates = rates[1]
-    changesInRates = {}
-    for currencey in previousRates:
-        if not("_id" == currencey or "currentTime" == currencey):
-            changesInRates[currencey] = currentRates[currencey] - previousRates[currencey]
-    return changesInRates
+    try:
+        previousRates = rates[0]
+        currentRates = rates[1]
+        changesInRates = {}
+        for currencey in previousRates:
+            if not("_id" == currencey or "currentTime" == currencey):
+                changesInRates[currencey] = currentRates[currencey] - previousRates[currencey]
+        return changesInRates
+    except:
+        print("Not enough data")
+        return []
 
 def PingAlertsFor(changesInRates):
     alerts = {}
@@ -23,8 +27,3 @@ def PingAlertsFor(changesInRates):
         else:
             alerts[currency] = False
     return alerts
-
-
-rates = RetrieveData()
-changesInRates = ExtractData(rates)
-print(PingAlertsFor(changesInRates))
