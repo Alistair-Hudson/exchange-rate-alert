@@ -1,5 +1,6 @@
 import requests
 import pymongo
+import time
 
 
 url = 'https://api.exchangerate.host/latest'
@@ -22,4 +23,5 @@ def RetrieveRates(currencies):
 def StoreRates(rates):
     connection =  Connect.GetConnection()
     db = connection.test
-    db.currency.insert_one(rates)
+    db.currency.update_one(rates,
+                            {"$currentDate": {"lastModified": True}})
