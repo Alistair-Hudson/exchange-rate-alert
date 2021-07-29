@@ -38,9 +38,11 @@ class AlertThread(threading.Thread):
             AlertHandler.SendAlertMessage(alerts)
 
 #Clear MongoDB to ensure only the latest information is used
+print("Clearing existing DB")
 DataProcessor.ClearData()
-if useMultiThreading:
+if True == useMultiThreading:
 #This is code to run the app on multiple threads
+    print("Running multithread")
     try:
         dataThread = DataThread()
         alertThread = AlertThread()
@@ -57,10 +59,11 @@ if useMultiThreading:
         print("Error: unable to start thread")
 else:
 #Non multithreaded app
-    while True:
+    count = 0
+    print("Running single thread")
+    while not(exitFlag):
         time.sleep(1)
         print("Retriving latest currency rates")
-        currencies = ["AUD", "GBP", "USD", "NZD", "ILS", "EUR"]
         rates = DataProcessor.RetrieveRates(currencies)
         DataProcessor.StoreRates(rates)
         print("Preparing alerts")
@@ -69,3 +72,4 @@ else:
         alerts = AlertMonitor.PingAlertsFor(changesInRates)
         AlertHandler.SendAlertMessage(alerts)
         print("Alerts sent out")
+        

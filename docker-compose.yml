@@ -1,10 +1,17 @@
-version: "3.9"
-services:
-    db:
-        image: exchange
-    dev:
+version: "2"
+services: 
+    data_process:
         build: .
+        image: "data_processor"
         ports: 
-            - "80:80"
-        depends_on: 
-            - db
+            - "5000:5000"
+    alert_monitor:
+        build: .
+        image: "alert_monitor"
+        ports:
+            - "5001:5001"
+    alert_handler:
+        build: . 
+        image: "alert_handler"
+        ports:
+            - "5002:5002"

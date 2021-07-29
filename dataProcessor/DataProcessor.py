@@ -2,9 +2,8 @@ import requests
 import pymongo
 import time
 
-
 url = 'https://api.exchangerate.host/latest'
-
+currencies = ["AUD", "GBP", "USD", "NZD", "ILS", "EUR"]
 #Class for connecting to MongoDB
 class Connect(object):
     @staticmethod
@@ -44,3 +43,14 @@ def ClearData():
     connection =  Connect.GetConnection()
     db = connection.test
     db.currency.delete_many({})
+
+
+print("DataProcessor running")
+ClearData()
+while True:
+    time.sleep(1)
+    print("Retrieving rates")
+    rates = RetrieveRates(currencies)
+    print("Storing Rates")
+    StoreRates(rates)
+

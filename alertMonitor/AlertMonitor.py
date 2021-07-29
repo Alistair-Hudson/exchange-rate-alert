@@ -1,4 +1,6 @@
 import pymongo
+import time
+import json
 
 #Class for connecting to MongoDB
 class Connect(object):
@@ -11,7 +13,6 @@ def RetrieveData():
     connection = Connect.GetConnection()
     db = connection.test
     rates = db.currency.find({})
-    db.currency.delete_one({})
     return rates
 
 #Extract the required data and compare
@@ -38,3 +39,16 @@ def PingAlertsFor(changesInRates):
             alerts[currency] = False
     return alerts
 
+#Send Alerts to DB
+def PushAlertsToDB(alerts):
+    connection =  Connect.GetConnection()
+    db = connection.test
+    db.alerts.insert_one(alerts)
+
+print("Alert Monitor running")
+while True:
+    time.sleep(1)
+    rates = RetrieveData()
+    changeInRates = ExtractData(rates)
+    alerts = PingAlertsFor(changeInRates)
+    PushAlertsToDB(alerts)
