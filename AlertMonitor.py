@@ -1,11 +1,20 @@
-import DataProcessor
+import pymongo
 
+#Class for connecting to MongoDB
+class Connect(object):
+    @staticmethod
+    def GetConnection():
+        return pymongo.MongoClient("mongodb+srv://CurrencyX:CurrencyX@cluster0.mcbqk.mongodb.net/CurrencyX?retryWrites=true&w=majority")
+
+#Retrieve database from MongoDB
 def RetrieveData():
-    connection = DataProcessor.Connect.GetConnection()
+    connection = Connect.GetConnection()
     db = connection.test
     rates = db.currency.find({})
+    db.currency.delete_one({})
     return rates
 
+#Extract the required data and compare
 def ExtractData(rates):
     try:
         previousRates = rates[0]
@@ -19,6 +28,7 @@ def ExtractData(rates):
         print("Not enough data")
         return []
 
+#Set which currencices are to be alerted for
 def PingAlertsFor(changesInRates):
     alerts = {}
     for currency in changesInRates:
@@ -27,3 +37,4 @@ def PingAlertsFor(changesInRates):
         else:
             alerts[currency] = False
     return alerts
+
