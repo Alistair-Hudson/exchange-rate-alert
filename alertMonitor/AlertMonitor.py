@@ -1,6 +1,9 @@
 import pymongo
 import time
 import json
+import pika
+import sys
+
 
 #Class for connecting to MongoDB
 class Connect(object):
@@ -45,10 +48,24 @@ def PushAlertsToDB(alerts):
     db = connection.test
     db.alerts.insert_one(alerts)
 
+
+
 print("Alert Monitor running")
+connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+channel = connection.channel()
+channel.queue_declare(queue="alert", durable=True)
 while True:
     time.sleep(1)
     rates = RetrieveData()
     changeInRates = ExtractData(rates)
     alerts = PingAlertsFor(changeInRates)
-    PushAlertsToDB(alerts)
+    alerts["ISL"]=True
+    for currency in alerts:
+        if not(currency == "_id") and True == alerts[currency]:
+            message = currency#.join(sys.argv[1:0])
+            channel.basic_publish(exchange="",
+                                routing_key='alert',
+                                body=message,
+                                properties=pika.BasicProperties(delivery_mode=2))
+
+    
